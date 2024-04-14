@@ -47,9 +47,11 @@ In the original paper, the authors use a similar process and assess the model's 
 
 ## Ethics
 - Why is Deep Learning a good approach to this problem?
+  
 It is difficult to imagine how a procedural algorithm could generate an image from a prompt. It would be virtually impossible to capture the immense diversity of possible words and prompts, and also the diversity in variations of output images from the same prompt. This task of identifying features in a given image is itself complex (but algorithms exist for that, like bag of words), but the task of directly linking visual representation and textual representation is even more substantial and difficult to achieve. The deep inferences that a deep model is able to make are crucial, and this is why we think Deep Learning is a good approach to the problem.
 
 - What broader societal issues are relevant to your chosen problem space?
+  
 Generative tasks as a whole pose deep societal issues. The ability of a model to generate virtually any image makes generating fake images very easy, which can be used to spread misinformation over social media. This is particularly dangerous when these generated images involve real people, like political figures. To put it simply, it will be extremely difficult from now on to distinguish what is real from what is fake.
 
 Another important think to consider is how data is used to train these models. In many cases, data is scraped from the Internet, often without the consent of the original artists. It is not fair for creators to have their intellectual property used to train a model people might rely on, instead of requesting service from the original creators and compensating them appropriately.
