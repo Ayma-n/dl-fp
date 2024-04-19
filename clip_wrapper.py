@@ -16,3 +16,9 @@ def get_text_encoding(tokens: list[str]):
     with torch.no_grad():
         text_features = model.encode_text(text)
         return text_features
+
+### These might be on the notebook? ###
+# 1. String with literal description of what we want to generate
+# 2. Encoding with CLIP
+# 3. Generate with the diffusion model
+# 4. Display 
