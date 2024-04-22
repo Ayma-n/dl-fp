@@ -20,7 +20,7 @@ def get_text_encoding(tokens: list[str]):
     
 def batch_get_image_encodings(images: tf.Tensor):
     with torch.no_grad():
-        image_features = model.encore_image(images)
+        image_features = model.encode_image(images)
         return image_features.numpy()
 
 ### These might be on the notebook? ###
