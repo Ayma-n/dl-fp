@@ -45,6 +45,7 @@ def load_coco_data(image_directory, captions_file):
     # py_function to use the tensors in the dataset to get the embeddings
     def tf_py_function_clip_embeddings(images, captions):
         clip_embeddings = tf.py_function(get_clip_embeddings, [images], tf.float32)
+        print("shapes from preprocess.py: ", clip_embeddings.shape)
         # clip_embeddings.set_shape((None, 512))
         return images, clip_embeddings
     
