@@ -36,7 +36,11 @@ def load_coco_data(image_directory, captions_file):
 
     # Define Python Function to get image embeddings (this will return a numpy array)
     def get_clip_embeddings(images):
-       return cw.batch_get_image_encodings(images)
+        # If single image
+        if len(images.shape) == 3:
+            return cw.batch_get_image_encodings(tf.expand_dims(images, axis=0)) 
+        else:
+            return cw.batch_get_image_encodings(images)
     
     # py_function to use the tensors in the dataset to get the embeddings
     def tf_py_function_clip_embeddings(images, captions):
