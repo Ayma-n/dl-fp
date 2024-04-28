@@ -1,7 +1,6 @@
 import os
 import tensorflow as tf
 from pycocotools.coco import COCO
-import numpy as np
 import clip_wrapper as cw
 
 def load_coco_data(image_directory, captions_file):
