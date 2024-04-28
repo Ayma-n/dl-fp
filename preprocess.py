@@ -18,6 +18,8 @@ def load_coco_data(image_directory, captions_file, categories_file):
     # Get image IDs
     image_ids = coco_captions.getImgIds(catIds=cat_ids)
 
+    print("img ids: ", image_ids)
+
     # Load images (get filepaths, and associate with captions)
     images = coco_captions.loadImgs(image_ids)
     filepaths_and_captions = []
