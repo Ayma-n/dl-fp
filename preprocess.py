@@ -3,22 +3,25 @@ import tensorflow as tf
 from pycocotools.coco import COCO
 import clip_wrapper as cw
 
-def load_coco_data(image_directory, captions_file):
+def load_coco_data(image_directory, captions_file, categories_file):
     # Initialize COCO with annotations
-    coco = COCO(captions_file)
+    coco_captions = COCO(captions_file)
+
+    # Initialize coco with categories
+    coco_categories = COCO(categories_file)
 
     # Get category IDs for cows and sheep
-    cat_ids = coco.getCatIds(catNms=["cow", "sheep"])
+    cat_ids = coco_categories.getCatIds(catNms=["cow", "sheep"])
 
     # Get image IDs
-    image_ids = coco.getImgIds(catIds=cat_ids)
+    image_ids = coco_captions.getImgIds(catIds=cat_ids)
 
     # Load images (get filepaths, and associate with captions)
-    images = coco.loadImgs(image_ids)
+    images = coco_captions.loadImgs(image_ids)
     filepaths_and_captions = []
     for img in images:
       full_fp = os.path.join(image_directory, img["file_name"])
-      annotations = [ann['caption'] for ann in coco.loadAnns(coco.getAnnIds(imgIds=img['id'], iscrowd=None))]
+      annotations = [ann['caption'] for ann in coco_captions.loadAnns(coco_captions.getAnnIds(imgIds=img['id'], iscrowd=None))]
       filepaths_and_captions.append((full_fp, annotations))
 
     # Create a Tensorflow dataset from the filepaths and annotations
