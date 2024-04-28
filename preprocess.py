@@ -48,9 +48,9 @@ def load_coco_data(image_directory, captions_file, categories=None):
         else:
             return cw.batch_get_image_encodings(images)
     
-    def get_text_clip_embeddings(caption):
+    def get_text_clip_embeddings(image, caption):
         tokens = cw.tokenize(caption)
-        return cw.get_text_encoding(tokens)
+        return image, cw.get_text_encoding(tokens)
         # If single image
         # if len(images.shape) == 3:
         #     return cw.batch_get_image_encodings(tf.expand_dims(images, axis=0)) 
