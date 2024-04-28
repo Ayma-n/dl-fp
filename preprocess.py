@@ -56,3 +56,8 @@ def get_64x64_images(dataset):
     def resize(image, _):
         return tf.image.resize(image, [64, 64])
     return dataset.map(resize)
+
+def get_64x64_images_and_embeddings(dataset):
+    def resize(image, embeddings):
+        return tf.image.resize(image, [64, 64]), embeddings
+    return dataset.map(resize)
