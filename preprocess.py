@@ -3,9 +3,14 @@ import tensorflow as tf
 from pycocotools.coco import COCO
 import clip_wrapper as cw
 
-def load_coco_data(image_directory, captions_file):
+def load_coco_data(image_directory, captions_file, categories=None):
     # Initialize COCO with annotations
     coco = COCO(captions_file)
+
+    # Get the category IDs for specified categories
+    # category_ids = []
+    # if categories:
+    #     category_ids = coco.getCatIds(catNms=categories)
 
     # Get image IDs
     image_ids = coco.getImgIds()
@@ -30,7 +35,7 @@ def load_coco_data(image_directory, captions_file):
        image = tf.image.decode_jpeg(image, channels=3)
        image = tf.image.resize(image, [224, 224])
        image = image / 255.0
-       return image, captions
+       return image, captions[0]
 
     # Create a dataset of ONLY images
     dataset = dataset.map(load_and_preprocess_image)
@@ -43,9 +48,18 @@ def load_coco_data(image_directory, captions_file):
         else:
             return cw.batch_get_image_encodings(images)
     
+    def get_text_clip_embeddings(caption):
+        tokens = cw.tokenize(caption)
+        return cw.get_text_encoding(tokens)
+        # If single image
+        # if len(images.shape) == 3:
+        #     return cw.batch_get_image_encodings(tf.expand_dims(images, axis=0)) 
+        # else:
+        #     return cw.batch_get_image_encodings(images)
+    
     # py_function to use the tensors in the dataset to get the embeddings
-    def tf_py_function_clip_embeddings(images, captions):
-        clip_embeddings = tf.py_function(get_clip_embeddings, [images], tf.float32)
+    def tf_py_function_clip_embeddings(images, caption):
+        clip_embeddings = tf.py_function(get_text_clip_embeddings, [caption], tf.float32)
         clip_embeddings.set_shape((1, 512))
         return images, clip_embeddings
     
