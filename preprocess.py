@@ -13,6 +13,8 @@ def load_coco_data(image_directory, captions_file, categories_file):
     # Get category IDs for cows and sheep
     cat_ids = coco_categories.getCatIds(catNms=["cow", "sheep"])
 
+    print("cat ids: ", cat_ids)
+
     # Get image IDs
     image_ids = coco_captions.getImgIds(catIds=cat_ids)
 
