@@ -7,8 +7,11 @@ def load_coco_data(image_directory, captions_file):
     # Initialize COCO with annotations
     coco = COCO(captions_file)
 
+    # Get category IDs for cows and sheep
+    cat_ids = coco.getCatIds(catNms=["cow", "sheep"])
+
     # Get image IDs
-    image_ids = coco.getImgIds()
+    image_ids = coco.getImgIds(catIds=cat_ids)
 
     # Load images (get filepaths, and associate with captions)
     images = coco.loadImgs(image_ids)
