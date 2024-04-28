@@ -29,6 +29,7 @@ def load_coco_data(image_directory, captions_file):
        image = tf.io.read_file(path)
        image = tf.image.decode_jpeg(image, channels=3)
        image = tf.image.resize(image, [224, 224])
+       image = image / 255.0
        return image, captions
 
     # Create a dataset of ONLY images
