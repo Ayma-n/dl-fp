@@ -51,3 +51,8 @@ def load_coco_data(image_directory, captions_file):
     dataset = dataset.map(tf_py_function_clip_embeddings)
 
     return dataset
+
+def get_64x64_images(dataset):
+    def resize(image, _):
+        return tf.image.resize(image, [64, 64])
+    return dataset.map(resize)
