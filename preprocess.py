@@ -48,9 +48,8 @@ def load_coco_data(image_directory, captions_file, categories=None):
         else:
             return cw.batch_get_image_encodings(images)
     
-    def get_text_clip_embeddings(image, caption):
-        tokens = cw.tokenize(caption)
-        return image, cw.get_text_encoding(tokens)
+    def get_text_clip_embeddings(caption):
+        return cw.get_text_encoding(caption.split(" "))
         # If single image
         # if len(images.shape) == 3:
         #     return cw.batch_get_image_encodings(tf.expand_dims(images, axis=0)) 
@@ -59,7 +58,7 @@ def load_coco_data(image_directory, captions_file, categories=None):
     
     # py_function to use the tensors in the dataset to get the embeddings
     def tf_py_function_clip_embeddings(images, caption):
-        clip_embeddings = tf.py_function(get_text_clip_embeddings, [images, caption], tf.float32)
+        clip_embeddings = tf.py_function(get_text_clip_embeddings, [caption], tf.float32)
         clip_embeddings.set_shape((1, 512))
         return images, clip_embeddings
     

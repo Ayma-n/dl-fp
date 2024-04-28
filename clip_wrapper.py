@@ -24,9 +24,6 @@ def batch_get_image_encodings(images: tf.Tensor):
         image_features = model.encode_image(torch_tensor)
         return image_features.cpu().numpy()
 
-def tokenize(to_tokenize: str):
-    return clip.tokenize(to_tokenize)
-
 ### These might be on the notebook? ###
 # 1. String with literal description of what we want to generate
 # 2. Encoding with CLIP
