@@ -29,7 +29,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
       for anno in annotations:
           if "cow" in anno.lower() or "sheep" in anno.lower():
             filepaths_and_captions.append((full_fp, annotations))
-
+            break
     # Create a Tensorflow dataset from the filepaths and annotations
     dataset = tf.data.Dataset.from_generator(
         lambda: filepaths_and_captions,
