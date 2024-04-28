@@ -8,17 +8,17 @@ def load_coco_data(image_directory, captions_file, categories_file):
     coco_captions = COCO(captions_file)
 
     # Initialize coco with categories
-    coco_categories = COCO(categories_file)
+    # coco_categories = COCO(categories_file)
 
     # Get category IDs for cows and sheep
-    cat_ids = coco_categories.getCatIds(catNms=["cat", "sheep"])
+    # cat_ids = coco_categories.getCatIds(catNms=["cat", "sheep"])
 
-    print("cat ids: ", cat_ids)
+    # print("cat ids: ", cat_ids)
 
     # Get image IDs
-    image_ids = coco_captions.getImgIds(catIds=cat_ids)
+    image_ids = coco_captions.getImgIds()
 
-    print("img ids: ", image_ids)
+    # print("img ids: ", image_ids)
 
     # Load images (get filepaths, and associate with captions)
     images = coco_captions.loadImgs(image_ids)
@@ -26,7 +26,9 @@ def load_coco_data(image_directory, captions_file, categories_file):
     for img in images:
       full_fp = os.path.join(image_directory, img["file_name"])
       annotations = [ann['caption'] for ann in coco_captions.loadAnns(coco_captions.getAnnIds(imgIds=img['id'], iscrowd=None))]
-      filepaths_and_captions.append((full_fp, annotations))
+      for anno in annotations:
+          if "cow" in anno.lower() or "sheep" in anno.lower():
+            filepaths_and_captions.append((full_fp, annotations))
 
     # Create a Tensorflow dataset from the filepaths and annotations
     dataset = tf.data.Dataset.from_generator(
