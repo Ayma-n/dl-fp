@@ -22,7 +22,7 @@ def batch_get_image_encodings(images: tf.Tensor):
     torch_tensor = torch.from_numpy(images.numpy()).permute(0, 3, 1, 2).to(device) # Change from [N, H, W, C] to [N, C, H, W] (differnet convention)
     with torch.no_grad():
         image_features = model.encode_image(torch_tensor)
-        return tf.convert_to_tensor(image_features.cpu().numpy())
+        return image_features.cpu().numpy()
 
 ### These might be on the notebook? ###
 # 1. String with literal description of what we want to generate
