@@ -2,6 +2,7 @@ import os
 import tensorflow as tf
 from pycocotools.coco import COCO
 import clip_wrapper as cw
+import glob
 
 def load_coco_data(image_directory, captions_file, categories_file):
     # Initialize COCO with annotations
@@ -14,6 +15,12 @@ def load_coco_data(image_directory, captions_file, categories_file):
     # cat_ids = coco_categories.getCatIds(catNms=["cat", "sheep"])
 
     # print("cat ids: ", cat_ids)
+
+    full_paths = glob.glob(os.path.join(image_directory, "*.jpg"))
+    names = [p.split("/")[-1].replace(".jpg", "") for p in full_paths]
+    ids_to_get = [int(n) for n in names]
+
+    print("ids to get: ", ids_to_get)
 
     # Get image IDs
     image_ids = coco_captions.getImgIds()
