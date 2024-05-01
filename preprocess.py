@@ -1,8 +1,10 @@
 import os
 import tensorflow as tf
-from pycocotools.coco import COCO
+from bert_wrapper import SequenceTokenizer
 import clip_wrapper as cw
 import glob
+from pycocotools.coco import COCO
+
 
 def load_coco_data(image_directory, captions_file, categories_file):
     # Initialize COCO with annotations
@@ -55,7 +57,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
     dataset = dataset.map(load_and_preprocess_image)
 
     # Define Python Function to get image embeddings (this will return a numpy array)
-    def get_clip_embeddings(images):
+    def get_clip_im_embeddings(images):
         # If single image
         if len(images.shape) == 3:
             return cw.batch_get_image_encodings(tf.expand_dims(images, axis=0)) 
@@ -63,21 +65,61 @@ def load_coco_data(image_directory, captions_file, categories_file):
             return cw.batch_get_image_encodings(images)
     
     # py_function to use the tensors in the dataset to get the embeddings
-    def tf_py_function_clip_embeddings(images, captions):
-        clip_embeddings = tf.py_function(get_clip_embeddings, [images], tf.float32)
-        clip_embeddings.set_shape((1, 512))
-        return images, clip_embeddings
+    def tf_py_function_clip_im_embeddings(images, captions):
+        clip_im_embeddings = tf.py_function(get_clip_im_embeddings, [images], tf.float32)
+        clip_im_embeddings.set_shape((1, 512))
+        return images, clip_im_embeddings, captions
     
-    dataset = dataset.map(tf_py_function_clip_embeddings)
+    dataset = dataset.map(tf_py_function_clip_im_embeddings)
+
+    def get_clip_text_embeddings(captions):
+        # If single image
+        if len(captions.shape) == 3:
+            return cw.batch_get_text_encodings(tf.expand_dims(captions, axis=0)) 
+        else:
+            return cw.batch_get_text_encodings(images)
+    
+    def tf_py_function_clip_text_embeddings(images, clip_im_embeds, captions):
+        clip_txt_embeddings = tf.py_function(get_clip_text_embeddings, [captions], tf.float32)
+        clip_txt_embeddings.set_shape((1, 512))
+        return images, clip_im_embeds, captions, clip_txt_embeddings
+    
+    dataset = dataset.map(tf_py_function_clip_text_embeddings)
+    
+    def get_bert_sequence(captions):
+        tokenizer = SequenceTokenizer()
+        tokens = tokenizer.tokenize(captions)
+        return tokens
+    
+    def tf_py_function_bert_embeddings(images, clip_im_embeds, captions, clip_txt_embeds):
+        bert_embeddings = tf.py_function(get_bert_sequence, [captions], tf.float32)
+        return images, clip_im_embeds, captions, clip_txt_embeds, bert_embeddings
+    
+    dataset = dataset.map(tf_py_function_bert_embeddings)
 
     return dataset
 
 def get_64x64_images(dataset):
-    def resize(image, _):
+    def resize(image, *args):
         return tf.image.resize(image, [64, 64])
     return dataset.map(resize)
 
 def get_64x64_images_and_embeddings(dataset):
-    def resize(image, embeddings):
+    def resize(image, embeddings, *args):
         return tf.image.resize(image, [64, 64]), embeddings
+    return dataset.map(resize)
+
+def get_64x64_images_and_text_embeddings(dataset):
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeds):
+        return tf.image.resize(image, [64, 64]), clip_txt_embeds
+    return dataset.map(resize)
+
+def get_64x64_images_im_embeddings_and_tokens_seq(dataset):
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeds):
+        return tf.image.resize(image, [64, 64]), clip_im_embeds, bert_embeds
+    return dataset.map(resize)
+
+def get_64x64_images_im_embeddings_and_tokens_seq(dataset):
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeds):
+        return tf.image.resize(image, [64, 64]), clip_txt_embeds, bert_embeds
     return dataset.map(resize)
