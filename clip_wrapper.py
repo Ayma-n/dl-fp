@@ -20,8 +20,8 @@ def get_text_encoding(tokens: list[str]):
     token_list = []
     print(tokens)
     for i in range(tokens.shape[0]):
-        print(((tokens[i]).numpy()).decode())   
-        token_list += [((tokens[i]).numpy()).decode()]
+        print(tokens[i].cpu().numpy().decode())   
+        token_list += [tokens[i].cpu().numpy().decode()]
     print(token_list)
     text = clip.tokenize(token_list).to(device)
     with torch.no_grad():
