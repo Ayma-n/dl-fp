@@ -12,18 +12,12 @@ def get_image_encoding_from_filepath(filepath: str):
         image_features = model.encode_image(image)
         return image_features.cpu().numpy()
 
-def get_tokens(tokens:list[str]):
-    token_list = []
-    for i in range(tokens.shape[0]):
-        token_list += [tokens[i].cpu().numpy().decode()]
-    text = clip.tokenize(token_list).to(device)
+def get_tokens(tokens: list[str]):
+    text = clip.tokenize(tokens).to(device)
     return text.cpu().numpy()
 
 def get_text_encoding(tokens: list[str]):
-    token_list = []
-    for i in range(tokens.shape[0]):
-        token_list += [tokens[i].cpu().numpy().decode()]
-    text = clip.tokenize(token_list).to(device)
+    text = clip.tokenize(tokens).to(device)
     with torch.no_grad():
         text_features = model.encode_text(text)
         return text_features.cpu().numpy()
