@@ -87,7 +87,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
         return cw.get_tokens(captions)
     
     def tf_py_function_tokens(images, clip_im_embeds, captions, clip_txt_embeds):
-        bert_embeddings = tf.py_function(get_tokens, [captions], tf.float32)
+        tokens = tf.py_function(get_tokens, [captions], tf.float32)
         return images, clip_im_embeds, captions, clip_txt_embeds, tokens
     
     dataset = dataset.map(tf_py_function_tokens)
