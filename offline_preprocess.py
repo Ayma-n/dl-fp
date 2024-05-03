@@ -4,6 +4,19 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 from pycocotools.coco import COCO
 import shutil
 
+buzzwords = ["cow", "sheep", "mountain", "hill", "countryside", "grass", "forest", "nature", 
+                 "farm", "alpacca", "horse", "landscape", "fence"]
+
+def check_naturey(captions: list[str]):
+    #returns true if a caption for this image has one of our buzz words, false otherwise
+    def match(word):
+        for capt in captions:
+            if word in capt.lower():
+                return True
+        return False
+    truth_map = [match(word) for word in buzzwords]
+    return any(truth_map)
+
 def load_coco_data(image_directory, captions_file):
     # Tokens to be matched
     toks = ["cow", "sheep", "cows", "sheeps"]
@@ -23,12 +36,9 @@ def load_coco_data(image_directory, captions_file):
       print(".", end="")
       full_fp = os.path.join(image_directory, img["file_name"])
       annotations = [ann['caption'] for ann in coco_captions.loadAnns(coco_captions.getAnnIds(imgIds=img['id'], iscrowd=None))]
-      for anno in annotations:
-          if "cow" in anno.lower() or "sheep" in anno.lower():
-            to_be_moved.append(full_fp)
-            break
+      if check_naturey(annotations):
+        to_be_moved.append(full_fp)
     
-    print("")
     dest = os.path.join(image_directory, "train_offline_preprocess")
     for tbm in to_be_moved:
        shutil.copyfile(tbm, os.path.join(dest, tbm.split("/")[-1]))
