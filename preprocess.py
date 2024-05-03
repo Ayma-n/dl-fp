@@ -5,6 +5,19 @@ import clip_wrapper as cw
 import glob
 from pycocotools.coco import COCO
 
+buzzwords = ["cow", "sheep", "mountain", "hill", "countryside", "grass", "forest", "nature", 
+                 "farm", "alpacca", "horse", "landscape", "fence"]
+
+def check_naturey(captions: list[str]):
+    #returns true if a caption for this image has one of our buzz words, false otherwise
+    def match(word):
+        for capt in captions:
+            if word in capt.lower():
+                return True
+        return False
+    truth_map = [match(word) for word in buzzwords]
+    return any(truth_map)
+
 
 def load_coco_data(image_directory, captions_file, categories_file):
     # Initialize COCO with annotations
@@ -31,12 +44,11 @@ def load_coco_data(image_directory, captions_file, categories_file):
     images = coco_captions.loadImgs(image_ids)
     filepaths_and_captions = []
     for img in images:
-      full_fp = os.path.join(image_directory, img["file_name"])
-      annotations = [ann['caption'] for ann in coco_captions.loadAnns(coco_captions.getAnnIds(imgIds=img['id'], iscrowd=None))]
-      for anno in annotations:
-          if "cow" in anno.lower() or "sheep" in anno.lower():
+        full_fp = os.path.join(image_directory, img["file_name"])
+        annotations = [ann['caption'] for ann in coco_captions.loadAnns(coco_captions.getAnnIds(imgIds=img['id'], iscrowd=None))]
+        if check_naturey(annotations):
             filepaths_and_captions.append((full_fp, annotations))
-            break
+
     # Create a Tensorflow dataset from the filepaths and annotations
     dataset = tf.data.Dataset.from_generator(
         lambda: filepaths_and_captions,
@@ -70,7 +82,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
         return images, clip_im_embeddings, captions
     
     dataset = dataset.map(tf_py_function_clip_im_embeddings)
-####OLD CODE
+
     def get_clip_text_embeddings(captions):
         # If single image
         return cw.get_text_encoding(captions)
@@ -94,7 +106,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
     train_dataset = dataset.take(train_size)
     valid_dataset = dataset.skip(train_size)
 
-    print("successfully initialized")
+    print("\nSuccessfully initialized!")
     return train_dataset, valid_dataset
 
 def get_64x64_images(dataset):
