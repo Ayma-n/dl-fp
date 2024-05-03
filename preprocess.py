@@ -51,7 +51,6 @@ def load_coco_data(image_directory, captions_file, categories_file):
        image = tf.image.decode_jpeg(image, channels=3)
        image = tf.image.resize(image, [224, 224])
        image = image / 255.0
-       print(captions)
        return image, captions
 
     # Create a dataset of ONLY images
@@ -75,10 +74,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
 ####OLD CODE
     def get_clip_text_embeddings(captions):
         # If single image
-        if len(captions.shape) == 3:
-            return cw.get_text_encoding(tf.expand_dims(captions, axis=0)) 
-        else:
-            return cw.get_text_encoding(captions)
+        return cw.get_text_encoding(captions)
     
     def tf_py_function_clip_text_embeddings(images, clip_im_embeds, captions):
         clip_txt_embeddings = tf.py_function(get_clip_text_embeddings, [captions], tf.float32)
