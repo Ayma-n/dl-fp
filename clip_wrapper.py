@@ -17,6 +17,7 @@ def get_tokens(tokens:list[str]):
     return text
 
 def get_text_encoding(tokens: list[str]):
+    tokens = [token for token in tokens.tolist()]
     text = clip.tokenize(tokens).to(device)
     with torch.no_grad():
         text_features = model.encode_text(text)
