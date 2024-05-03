@@ -14,28 +14,18 @@ def get_image_encoding_from_filepath(filepath: str):
 
 def get_tokens(tokens:list[str]):
     token_list = []
-    print("pos 5")
     for i in range(tokens.shape[0]):
-        print("pos 6")
-        print(tokens[i].cpu().numpy().decode())   
         token_list += [tokens[i].cpu().numpy().decode()]
-    print("pos 7")
     text = clip.tokenize(token_list).to(device)
-    print("pos 8")
     return text.cpu().numpy()
 
 def get_text_encoding(tokens: list[str]):
     token_list = []
-    print("pos 1")
     for i in range(tokens.shape[0]):
-        print("pos 2")
-        print(tokens[i].cpu().numpy().decode())   
         token_list += [tokens[i].cpu().numpy().decode()]
-    print("pos 3")
     text = clip.tokenize(token_list).to(device)
     with torch.no_grad():
         text_features = model.encode_text(text)
-        print("pos 4")
         return text_features.cpu().numpy()
     
 def batch_get_image_encodings(images: tf.Tensor):
