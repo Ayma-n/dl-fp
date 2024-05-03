@@ -76,7 +76,6 @@ def load_coco_data(image_directory, captions_file, categories_file):
 
     train_dataset = dataset.take(train_size)
     valid_dataset = dataset.skip(train_size)
-    print("at least it's running")
 
 
     return train_dataset, valid_dataset

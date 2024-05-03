@@ -27,8 +27,6 @@ def load_coco_data(image_directory, captions_file, categories_file):
     # Get image IDs
     image_ids = coco_captions.getImgIds()
 
-    # print("img ids: ", image_ids)
-
     # Load images (get filepaths, and associate with captions)
     images = coco_captions.loadImgs(image_ids)
     filepaths_and_captions = []
@@ -96,6 +94,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
     train_dataset = dataset.take(train_size)
     valid_dataset = dataset.skip(train_size)
 
+    print("successfully initialized")
     return train_dataset, valid_dataset
 
 def get_64x64_images(dataset):
@@ -112,6 +111,6 @@ def get_64x64_images_and_text_embeddings(dataset):
     def create_miniset(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
         miniset = tf.data.Dataset.from_tensor_slices(clip_txt_embeds)
         def populate(clip_txt_embed):
-            return tf.image.resize(image, [128, 128]), clip_txt_embed.set_shape((1, 512))
+            return tf.image.resize(image, [128, 128]), tf.expand_dims(clip_txt_embed, axis=0)
         return miniset.map(populate)
     return dataset.flat_map(create_miniset)
