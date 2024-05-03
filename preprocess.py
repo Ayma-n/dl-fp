@@ -71,7 +71,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
         return images, clip_im_embeddings, captions
     
     dataset = dataset.map(tf_py_function_clip_im_embeddings)
-
+####OLD CODE
     def get_clip_text_embeddings(captions):
         # If single image
         if len(captions.shape) == 3:
@@ -100,13 +100,13 @@ def load_coco_data(image_directory, captions_file, categories_file):
     return dataset
 
 def get_64x64_images(dataset):
-    def resize(image, *args):
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeddings):
         return tf.image.resize(image, [64, 64])
     return dataset.map(resize)
 
 def get_64x64_images_and_embeddings(dataset):
-    def resize(image, embeddings, *args):
-        return tf.image.resize(image, [64, 64]), embeddings
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeddings):
+        return tf.image.resize(image, [64, 64]), clip_im_embeds
     return dataset.map(resize)
 
 def get_64x64_images_and_text_embeddings(dataset):
