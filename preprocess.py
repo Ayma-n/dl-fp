@@ -55,7 +55,8 @@ def load_coco_data(image_directory, captions_file, categories_file):
 
     # Create a dataset of ONLY images
     dataset = dataset.map(load_and_preprocess_image)
-
+    train_size = int(len(filepaths_and_captions)*0.75)
+    
     # Define Python Function to get image embeddings (this will return a numpy array)
     def get_clip_im_embeddings(images):
         # If single image
@@ -93,6 +94,12 @@ def load_coco_data(image_directory, captions_file, categories_file):
     
     dataset = dataset.map(tf_py_function_tokens)
 
+    train_dataset = dataset.take(train_size)
+    valid_dataset = dataset.skip(train_size)
+    print("at least it's running")
+
+
+    return train_dataset, valid_dataset
     return dataset
 
 def get_64x64_images(dataset):
