@@ -100,28 +100,18 @@ def load_coco_data(image_directory, captions_file, categories_file):
 
 def get_64x64_images(dataset):
     def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
-        return tf.image.resize(image, [64, 64])
+        return tf.image.resize(image, [128, 128])
     return dataset.map(resize)
 
 def get_64x64_images_and_embeddings(dataset):
-    def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
-        return tf.image.resize(image, [64, 64]), clip_im_embeds
+    def resize(image, clip_im_embed, captions, clip_txt_embeds, tokens):
+        return tf.image.resize(image, [128, 128]), clip_im_embed
     return dataset.map(resize)
 
 def get_64x64_images_and_text_embeddings(dataset):
     def create_miniset(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
         miniset = tf.data.Dataset.from_tensor_slices(clip_txt_embeds)
         def populate(clip_txt_embed):
-            return tf.image.resize(image, [64, 64]), clip_txt_embed
+            return tf.image.resize(image, [128, 128]), clip_txt_embed.set_shape((1, 512))
         return miniset.map(populate)
     return dataset.flat_map(create_miniset)
-
-def get_64x64_images_im_embeddings_and_tokens_seq(dataset):
-    def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
-        return tf.image.resize(image, [64, 64]), clip_im_embeds, tokens
-    return dataset.map(resize)
-
-def get_64x64_images_im_embeddings_and_tokens_seq(dataset):
-    def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
-        return tf.image.resize(image, [64, 64]), clip_txt_embeds, tokens
-    return dataset.map(resize)
