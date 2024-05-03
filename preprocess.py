@@ -78,7 +78,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
     
     def tf_py_function_clip_text_embeddings(images, clip_im_embeds, captions):
         clip_txt_embeddings = tf.py_function(get_clip_text_embeddings, [captions], tf.float32)
-        clip_txt_embeddings.set_shape((1, 512))
+        clip_txt_embeddings.set_shape((5, 512))
         return images, clip_im_embeds, captions, clip_txt_embeddings
     
     dataset = dataset.map(tf_py_function_clip_text_embeddings)
@@ -88,6 +88,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
     
     def tf_py_function_tokens(images, clip_im_embeds, captions, clip_txt_embeds):
         tokens = tf.py_function(get_tokens, [captions], tf.float32)
+        print(tokens.shape)
         return images, clip_im_embeds, captions, clip_txt_embeds, tokens
     
     dataset = dataset.map(tf_py_function_tokens)
