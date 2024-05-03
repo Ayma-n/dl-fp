@@ -83,40 +83,38 @@ def load_coco_data(image_directory, captions_file, categories_file):
     
     dataset = dataset.map(tf_py_function_clip_text_embeddings)
     
-    def get_bert_sequence(captions):
-        tokenizer = SequenceTokenizer()
-        tokens = tokenizer.tokenize(captions)
-        return tokens
+    def get_tokens(captions):
+        return cw.get_tokens(captions)
     
-    def tf_py_function_bert_embeddings(images, clip_im_embeds, captions, clip_txt_embeds):
-        bert_embeddings = tf.py_function(get_bert_sequence, [captions], tf.float32)
-        return images, clip_im_embeds, captions, clip_txt_embeds, bert_embeddings
+    def tf_py_function_tokens(images, clip_im_embeds, captions, clip_txt_embeds):
+        bert_embeddings = tf.py_function(get_tokens, [captions], tf.float32)
+        return images, clip_im_embeds, captions, clip_txt_embeds, tokens
     
-    dataset = dataset.map(tf_py_function_bert_embeddings)
+    dataset = dataset.map(tf_py_function_tokens)
 
     return dataset
 
 def get_64x64_images(dataset):
-    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeddings):
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
         return tf.image.resize(image, [64, 64])
     return dataset.map(resize)
 
 def get_64x64_images_and_embeddings(dataset):
-    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeddings):
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
         return tf.image.resize(image, [64, 64]), clip_im_embeds
     return dataset.map(resize)
 
 def get_64x64_images_and_text_embeddings(dataset):
-    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeds):
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
         return tf.image.resize(image, [64, 64]), clip_txt_embeds
     return dataset.map(resize)
 
 def get_64x64_images_im_embeddings_and_tokens_seq(dataset):
-    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeds):
-        return tf.image.resize(image, [64, 64]), clip_im_embeds, bert_embeds
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
+        return tf.image.resize(image, [64, 64]), clip_im_embeds, tokens
     return dataset.map(resize)
 
 def get_64x64_images_im_embeddings_and_tokens_seq(dataset):
-    def resize(image, clip_im_embeds, captions, clip_txt_embeds, bert_embeds):
-        return tf.image.resize(image, [64, 64]), clip_txt_embeds, bert_embeds
+    def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
+        return tf.image.resize(image, [64, 64]), clip_txt_embeds, tokens
     return dataset.map(resize)
