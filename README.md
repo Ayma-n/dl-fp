@@ -1,5 +1,5 @@
-# Image Generation with CLIP Conditioners
-A full text-conditional image generation stack introduced in [Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, Mark Chen. Hierarchical Text-Conditional Image Generation with CLIP Latents. 2022.](https://arxiv.org/pdf/2204.06125.pdf)
+# Image Generation with CLIP Conditioners using CVAEs
+Work inspired by the full text-conditional image generation stack introduced in [Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, Mark Chen. Hierarchical Text-Conditional Image Generation with CLIP Latents. 2022.](https://arxiv.org/pdf/2204.06125.pdf)
 
 Final Project for CSCI1470 "Deep Learning" during Spring 2024 at Brown University. <br/>
 By Ariana Azarbal (aazarbal), Ayman Benjelloun Touimi (abenjell), and Sofia Tazi (stazi).
