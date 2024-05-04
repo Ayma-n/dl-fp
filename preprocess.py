@@ -4,11 +4,13 @@ import clip_wrapper as cw
 import glob
 from pycocotools.coco import COCO
 
-buzzwords = ["cow", "sheep", "mountain", "hill", "countryside", "grass", "forest", "nature", 
+small_buzzwords = ["cow", "sheep"]
+large_buzzwords = ["cow", "sheep", "mountain", "hill", "countryside", "grass", "forest", "nature", 
                  "farm", "alpacca", "horse", "landscape", "fence"]
 
-def check_naturey(captions: list[str]):
-    #returns true if a caption for this image has one of our buzz words, false otherwise
+def check_naturey(captions: list[str], is_small: bool):
+    """Returns true if a caption for this image has one of our buzz words, false otherwise"""
+    buzzwords = small_buzzwords if is_small else large_buzzwords
     def match(word):
         for capt in captions:
             if word in capt.lower():
@@ -18,7 +20,7 @@ def check_naturey(captions: list[str]):
     return any(truth_map)
 
 
-def load_coco_data(image_directory, captions_file, categories_file):
+def load_coco_data(image_directory, captions_file, is_small: bool):
     # Initialize COCO with annotations
     coco_captions = COCO(captions_file)
 
@@ -45,7 +47,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
     for img in images:
         full_fp = os.path.join(image_directory, img["file_name"])
         annotations = [ann['caption'] for ann in coco_captions.loadAnns(coco_captions.getAnnIds(imgIds=img['id'], iscrowd=None))]
-        if check_naturey(annotations):
+        if check_naturey(annotations, is_small):
             filepaths_and_captions.append((full_fp, annotations))
 
     # Create a Tensorflow dataset from the filepaths and annotations
@@ -64,7 +66,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
 
     # Create a dataset of ONLY images
     dataset = dataset.map(load_and_preprocess_image)
-    train_size = int(len(filepaths_and_captions)*0.95)
+    train_size = int(len(filepaths_and_captions)*0.75)
 
     # Define Python Function to get image embeddings (this will return a numpy array)
     def get_clip_im_embeddings(images):
