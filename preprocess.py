@@ -64,7 +64,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
 
     # Create a dataset of ONLY images
     dataset = dataset.map(load_and_preprocess_image)
-    train_size = int(len(filepaths_and_captions)*0.75)
+    train_size = int(len(filepaths_and_captions)*0.95)
 
     # Define Python Function to get image embeddings (this will return a numpy array)
     def get_clip_im_embeddings(images):
@@ -116,7 +116,7 @@ def load_coco_data(image_directory, captions_file, categories_file):
 
 def get_64x64_images(dataset):
     def resize(image, clip_im_embeds, captions, clip_txt_embeds, tokens):
-        return tf.image.resize(image, [128, 128])
+        return tf.image.resize(image, [64, 64])
     return dataset.map(resize)
 
 def get_64x64_images_and_embeddings(dataset):
