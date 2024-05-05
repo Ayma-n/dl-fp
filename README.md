@@ -1,4 +1,4 @@
-# Image Generation with CLIP Conditioners using Conditional Variational Autoencoders (CVAEs)
+# Generative CLIP-Conditioned Variational Autoencoders (CVAEs)
 Work inspired by the full text-conditional image generation stack introduced in [Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, Mark Chen. Hierarchical Text-Conditional Image Generation with CLIP Latents. 2022.](https://arxiv.org/pdf/2204.06125.pdf)
 
 Final Project for CSCI1470 "Deep Learning" during Spring 2024 at Brown University. <br/>
@@ -15,23 +15,21 @@ The problem addressed in the paper is an example of <strong>structured predictio
 - [Jonathan Ho, Ajay Jain, Pieter Abbeel. Denoising Diffusion Probabilistic Models. 2020](https://arxiv.org/pdf/2006.11239.pdf). A foundational paper introducing the idea of denoising diffusion models for image synthesis. This part is essential in the architecture we're trying to reproduce, given that it takes care of the actual image generation.
 
 ## Data
-For this project, we will need a substantial dataset of image-caption pairs. Many of them come to mind:
+For this project, we will need a substantial dataset of image-caption pairs. Many of them come to mind, but we use:
 - [MS-COCO](https://cocodataset.org/#home): Mentioned in the paper, it is one of the most commonly used for tasks involving images and their caption. It's important to note that according to section 5.3, unCLIP is not directly trained on MS-COCO's training data. Because of the large necessary computing power, we might need to use only a subset of MS-COCO.
-- [WIT: Wikipedia-Based Image Text Dataset](https://github.com/google-research-datasets/wit). A large multimodal, multilingual dataset with 37M+ image-text examples. Here again, due to the immense amount of data, we will probably need to train on a smaller, randomly chosen subset.
-- [Cornell Movie Dialog Corpus](https://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html). We thought it would be a fun idea to make use of this dataset. However, we recognize the preprocessing might be a lot of work, given that it would require us to extend appropriate movie scenes / pictures to generate the data.
-- [SciXGen](https://aclanthology.org/2021.findings-emnlp.128.pdf) : A scientific paper dataset. Albeit mostly used for text generation, focusing on figures and their descriptions instead could help us create like visual interpretations of scientific content. Performance and preprocessing would be a major concern here, however.
-[Recipe1M+](http://pic2recipe.csail.mit.edu/) : Cooking recipes with corresponding food images. Training extensively on this dataset can help us generate images from textual recipes (probably the ingredients).
+
 
 ## Methodology
 We are looking to implement, in Tensorflow, the autoencoder which will take, as an input, the conditioned CLIP embeddings and generate images through denoising. To get the embeddings, we would use a pre-trained CLIP model. We could either use OpenAI's implementation [here](https://github.com/openai/CLIP), or make use of publicly-available APIs like the one by Hugging Face [here](https://huggingface.co/docs/transformers/model_doc/clip). <br/>
 Because both of these models are implemented in PyTorch, we will need to "convert" the embeddings to Tensorflow. Since they are essentially matrices, one way to do it would be to transform PyTorch `Tensor`s into `numpy` arrays, and use Tensorflow's `convert_to_tensor`.  We can then used these tensors in our diffusion model. 
+
 ## Model
 Our current model relies on an autoencoder structure. We concatenate CLIP embeddings to a representation of an imput image which has already gone through a portion of our encoder, and then put it through a second encoder portion. Our encoder, particularly the first chunk, includes many convolutional layers. Then, we add random noise and put the output through a decoder, which outputs an image. 
 
 ## Metrics
 Given this task is intrinsically a generative task, it is difficult to find a very clear metric for accuracy. We will be able to use our model's loss to track whether the model learns, but assessment on its performance will primarily be qualitatively assessed (by looking at the generated images). 
 
-In the original paper, the authors use a similar process and assess the model's performance using human evaluation. Participants are asked to assess Photorealism, Caption Similarity, and Diversity. They primarily compare two versions of their model: one which derives embeddings autoregressively from the CLIP embeddings, and one involving a diffusion model. It seems like the authors were trying to outperform GLIDE, which they did for certain assessments and for certain guidance scales. For reference, this parameter assesses the influence of the guiding mechanism during the diffusion process.
+In unCLIP, the authors use a similar process and assess the model's performance using human evaluation. Participants are asked to assess Photorealism, Caption Similarity, and Diversity. They primarily compare two versions of their model: one which derives embeddings autoregressively from the CLIP embeddings, and one involving a diffusion model. It seems like the authors were trying to outperform GLIDE, which they did for certain assessments and for certain guidance scales. For reference, this parameter assesses the influence of the guiding mechanism during the diffusion process.
 
 #### Base, Target, and Reach Goals
 - <strong>Base Goal</strong>: Implementing a functional diffusion model, which could take some kind of embedding (not necessarily CLIP). 
@@ -49,8 +47,3 @@ Generative tasks as a whole pose deep societal issues. The ability of a model to
 
 Another important think to consider is how data is used to train these models. In many cases, data is scraped from the Internet, often without the consent of the original artists. It is not fair for creators to have their intellectual property used to train a model people might rely on, instead of requesting service from the original creators and compensating them appropriately.
 
-## Division of Labor
-- Ariana: Investigate how to import the CLIP model and integrate it to our pipeline, as well as how to feed the input data. Investigate implementation of loss function for generated images.
-- Ayman: Look through the model helping with transforming CLIP embeddings to make them suitable for the specialized image generation task. Figure out shapes/concatenation/feeding of the embeddings.
-- Sofia: Investigate implementation of the U-Net architecture / Hierarchical VAE based diffusion models. 
-Because the diffusion model is our base goal, we will all virtually be working on implementation of the diffusion part of the project during the first half.
