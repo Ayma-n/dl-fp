@@ -4,6 +4,17 @@ Work inspired by the full text-conditional image generation stack introduced in 
 Final Project for CSCI1470 "Deep Learning" during Spring 2024 at Brown University. <br/>
 By Ariana Azarbal (aazarbal), Ayman Benjelloun Touimi (abenjell), and Sofia Tazi (stazi).
 
+## How to Navigate this Repository
+
+### Resources
+- The datasets we've used, final weights for training, and Google Colab versions of our notebooks can be found on our [Final Handin](https://drive.google.com/drive/folders/18ivvw1xlyJ4zIK8Tr03ZSgloiA6ZjYRi?usp=drive_link) Google Drive folder. Note that the notebooks assume this folder is called "Deep Learning FP" and is present in your main Google Drive folder.
+
+### Notebooks
+- The bulk of the code we run is in the Google Colab notebooks, which we've included copies of in the `final_notebooks/` directory. The names of the notebooks should outline what dimensions of images we're training or testing the model on, and different properties (dropout vs. no drouput, etc.)
+
+### Python Modules
+- 
+
 ## Introduction
 Contrastive Language Image Pretraining (CLIP)  opens up vast possibilities for multimodal learning by producing an aligned representation of text and image data in a shared latent space. Not only has this model demonstrated impressive zero-shot capabilities, but has been incorporated as an effective image encoder in Vision-Language Models (VLMs) which perform tasks such as visual question and answering, object detection, etc .  
 
