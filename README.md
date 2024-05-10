@@ -12,8 +12,11 @@ By Ariana Azarbal (aazarbal), Ayman Benjelloun Touimi (abenjell), and Sofia Tazi
 ### Notebooks
 - The bulk of the code we run is in the Google Colab notebooks, which we've included copies of in the `final_notebooks/` directory. The names of the notebooks should outline what dimensions of images we're training or testing the model on, and different properties (dropout vs. no drouput, etc.)
 
-### Python Modules
-- 
+### Python Modules and Scripts
+We make use of three main modules or scripts we wrote:
+- `clip_wrapper.py` contains a few functions dedicated to interacting with the `clip` Python library. It provides convenient methods to obtain image or text embeddings.
+- `preprocess.py` contains our preprocessing code. It contains a few methods to obtain a Tensorflow Dataset of Image/Embedding pairs. We incldued multiple methods, that allow us to get either 64x64 and 128x128 images, and their image or text embeddings. 
+- `offline_preprocess.py` is a Python script designed to be run offline to prepare the dataset, even before preprocessing. It is this script that narrows down the set of images in the training dataset to bucolic-themed images. This script was a necessity due to the MS COCO training dataset being too large to unzip in Google Colab. 
 
 ## Introduction
 Contrastive Language Image Pretraining (CLIP)  opens up vast possibilities for multimodal learning by producing an aligned representation of text and image data in a shared latent space. Not only has this model demonstrated impressive zero-shot capabilities, but has been incorporated as an effective image encoder in Vision-Language Models (VLMs) which perform tasks such as visual question and answering, object detection, etc .  
