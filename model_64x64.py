@@ -4,15 +4,20 @@ import os
 import matplotlib.pyplot as plt
 import clip_wrapper
 
+# 64x64 Model for Reference
+# Please check the Final Notebooks for the most up-to-date, accurate model
 class ClipCVAE(tf.keras.Model):
+
   def __init__(self, input_shape,  latent_dim, dropout_rate):
     super(ClipCVAE, self).__init__()
     self.latent_dim = latent_dim
-    self.shape_input = input_shape  # Adjust channel to include conditions if feasible
+    self.shape_input = input_shape
     self.dropout_prob = dropout_rate
 
-
+    #Dense layer used to shrink the embedding before inputing it in the decoder
     self.embedding_shrinker = tf.keras.layers.Dense(32)
+
+    #First part of the encoder before embedding concatenation
     self.encoder_part1= tf.keras.Sequential(
         [
             tf.keras.layers.InputLayer(input_shape=self.shape_input, name="encoder_part1_inputlayer"),
@@ -30,6 +35,7 @@ class ClipCVAE(tf.keras.Model):
             tf.keras.layers.LeakyReLU(),
             tf.keras.layers.Flatten()])
 
+    #Second part of the encoder after concatenation
     self.encoder_part2 = tf.keras.Sequential([
             tf.keras.layers.Dense(2048, kernel_initializer=tf.keras.initializers.HeNormal(), activation = "leaky_relu"),
             tf.keras.layers.Dense(2048, kernel_initializer=tf.keras.initializers.HeNormal(), activation="leaky_relu"),
@@ -42,6 +48,7 @@ class ClipCVAE(tf.keras.Model):
 
     self.mu = tf.keras.layers.Dense(self.latent_dim, kernel_initializer=tf.keras.initializers.HeNormal())
     self.logv = tf.keras.layers.Dense(self.latent_dim, kernel_initializer=tf.keras.initializers.HeNormal())
+
 
     self.decoder = tf.keras.Sequential(
         [
@@ -68,13 +75,15 @@ class ClipCVAE(tf.keras.Model):
         ]
     )
 
+  # Loss combining Binary Cross entropy, KL Divergence and Structural Similarity
   def compute_loss(self, inputs, reconstructed, logv, mu):
     inputs, _ = inputs
     reconstruction_loss = tf.reduce_mean(tf.reduce_sum(tf.keras.losses.binary_crossentropy(inputs, reconstructed)))
     ssim_loss = 1 - tf.reduce_mean(tf.image.ssim(inputs, reconstructed, max_val=1.0))
     kl_loss = -0.5 * tf.reduce_mean(tf.reduce_sum(1 + logv - tf.square(mu) - tf.exp(logv)))
     total_loss = reconstruction_loss + 0.5 * kl_loss + 0.1 * ssim_loss
-    return total_loss
+    return total_loss / BATCH_SIZE
+
 
   def call(self, args, training=False):
     x, embedding = args
@@ -93,11 +102,12 @@ class ClipCVAE(tf.keras.Model):
 
     # Sample Z (reparameterization trick)
     sigma = tf.math.sqrt(tf.math.exp(logv))
-    eps = tf.random.normal([1, self.latent_dim])
+    eps = tf.random.normal([BATCH_SIZE, self.latent_dim])
     z = mu + tf.multiply(sigma, eps)
 
     if training:
-      z = tf.nn.dropout(z, rate=self.dropout_prob)
+      dropout_rate = self.dropout_prob
+      z = tf.nn.dropout(z, rate=dropout_rate)
 
     embedding = self.embedding_shrinker(embedding)
     # Concatenate z with embedding again
@@ -108,6 +118,7 @@ class ClipCVAE(tf.keras.Model):
 
     return res, mu, logv
 
+  # Called when .fit is called
   def train_step(self, data):
       with tf.GradientTape() as tape:
           reconstruction, mu, logv = self(data, training=True)
@@ -116,11 +127,13 @@ class ClipCVAE(tf.keras.Model):
       self.optimizer.apply_gradients(zip(grads, self.trainable_variables))
       return {'train loss': loss}
 
+  # Called at each epoch when .fit is called
   def test_step(self, data):
     reconstruction, mu, logv = self(data, training=False)
     loss = self.compute_loss(data, reconstruction, logv, mu)
     return {'valid loss': loss}
 
+  #Visualisation
   def show_image(self, capt):
     z = tf.random.normal(shape=[1, self.latent_dim])
     encoding = clip_wrapper.get_text_encoding(capt)

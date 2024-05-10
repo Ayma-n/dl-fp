@@ -23,13 +23,7 @@ def get_text_encoding(tokens: list[str]):
         return text_features.cpu().numpy()
     
 def batch_get_image_encodings(images: tf.Tensor):
-    torch_tensor = torch.from_numpy(images.cpu().numpy()).permute(0, 3, 1, 2).to(device) # Change from [N, H, W, C] to [N, C, H, W] (differnet convention)
+    torch_tensor = torch.from_numpy(images.cpu().numpy()).permute(0, 3, 1, 2).to(device) # Change from [N, H, W, C] to [N, C, H, W] (different convention)
     with torch.no_grad():
         image_features = model.encode_image(torch_tensor)
         return image_features.cpu().numpy()
-
-### These might be on the notebook? ###
-# 1. String with literal description of what we want to generate
-# 2. Encoding with CLIP
-# 3. Generate with the diffusion model
-# 4. Display 
