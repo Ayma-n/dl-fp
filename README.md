@@ -4,10 +4,14 @@ Work inspired by the full text-conditional image generation stack introduced in 
 Final Project for CSCI1470 "Deep Learning" during Spring 2024 at Brown University. <br/>
 By Ariana Azarbal (aazarbal), Ayman Benjelloun Touimi (abenjell), and Sofia Tazi (stazi).
 
+## Other Final Deliverables
+- [DL Day Poster](https://github.com/Ayma-n/dl-fp/blob/main/poster.pdf)
+- [Final Report](https://docs.google.com/document/d/1eWXnU5SLrRJec3WjQCzKKW7B6-9bn8qj7qAlRBV4qeo/edit?usp=sharing)
+
 ## How to Navigate this Repository
 
 ### Resources
-- The datasets we've used, final weights for training, and Google Colab versions of our notebooks can be found on our [Final Handin](https://drive.google.com/drive/folders/18ivvw1xlyJ4zIK8Tr03ZSgloiA6ZjYRi?usp=drive_link) Google Drive folder. Note that the notebooks assume this folder is called "Deep Learning FP" and is present in your main Google Drive folder.
+- The datasets we've used, final weights after training, and Google Colab versions of our notebooks can be found on our [Final Handin](https://drive.google.com/drive/folders/18ivvw1xlyJ4zIK8Tr03ZSgloiA6ZjYRi?usp=drive_link) Google Drive folder. Note that the notebooks assume this folder is called "Deep Learning FP" and is present in your main Google Drive folder.
 
 ### Notebooks
 - The bulk of the code we run is in the Google Colab notebooks, which we've included copies of in the `final_notebooks/` directory. The names of the notebooks should outline what dimensions of images we're training or testing the model on, and different properties (dropout vs. no drouput, etc.)
@@ -17,6 +21,8 @@ We make use of three main modules or scripts we wrote:
 - `clip_wrapper.py` contains a few functions dedicated to interacting with the `clip` Python library. It provides convenient methods to obtain image or text embeddings.
 - `preprocess.py` contains our preprocessing code. It contains a few methods to obtain a Tensorflow Dataset of Image/Embedding pairs. We incldued multiple methods, that allow us to get either 64x64 and 128x128 images, and their image or text embeddings. 
 - `offline_preprocess.py` is a Python script designed to be run offline to prepare the dataset, even before preprocessing. It is this script that narrows down the set of images in the training dataset to bucolic-themed images. This script was a necessity due to the MS COCO training dataset being too large to unzip in Google Colab. 
+
+Note: Another Python file, `model.py`, includes a copy of our model. It is just there for reference, and is not directly used inside the notebooks.
 
 ## Introduction
 Contrastive Language Image Pretraining (CLIP)  opens up vast possibilities for multimodal learning by producing an aligned representation of text and image data in a shared latent space. Not only has this model demonstrated impressive zero-shot capabilities, but has been incorporated as an effective image encoder in Vision-Language Models (VLMs) which perform tasks such as visual question and answering, object detection, etc .  
