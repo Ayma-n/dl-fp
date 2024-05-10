@@ -6,6 +6,7 @@ import clip_wrapper
 
 # 64x64 Model for Reference
 # Please check the Final Notebooks for the most up-to-date, accurate model
+BATCH_SIZE = 16
 class ClipCVAE(tf.keras.Model):
 
   def __init__(self, input_shape,  latent_dim, dropout_rate):
